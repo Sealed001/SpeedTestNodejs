@@ -1,13 +1,14 @@
-import express from 'express';
-import { v4 as uuidv4 } from 'uuid';
+import { RemoteInfo } from "dgram";
 
-import https from 'node:https';
-import dgram from 'node:dgram';
-import { readFileSync } from 'node:fs';
+const express = require('express');
+const { v4: uuidv4 } = require('uuid');
+const https = require('https');
+const { readFileSync } = require('fs');
+const dgram = require('dgram');
 
 const httpsServerOptions = {
-  key: readFileSync('../../certification/privkey.pem'),
-  cert: readFileSync('../../certification/cert.pem')
+  key: readFileSync('/www/certification/privkey.pem'),
+  cert: readFileSync('/www/certification/cert.pem')
 };
 
 const expressApp = express();
@@ -26,7 +27,7 @@ interface IClientInfo {
 }
 const clients: Record<string, IClientInfo> = {};
 
-socket.on('message', (msg: Buffer, rinfo: dgram.RemoteInfo) => {
+socket.on('message', (msg: Buffer, rinfo: RemoteInfo) => {
   const message = JSON.parse(msg.toString());
 
   if (typeof message.experimentCode !== 'string') {
