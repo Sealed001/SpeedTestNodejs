@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "sourceRoot": "./src",
+    "outDir": "./dist",
+    "allowSyntheticDefaultImports": true
+  }
+}
