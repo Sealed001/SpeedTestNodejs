@@ -1,12 +1,13 @@
-const express = require("express");
-const https = require('https');
-const dgram = require('dgram');
-const { v5 } = require('uuid');
-const fs = require('fs');
+import express from 'express';
+import { v4 as uuidv4 } from 'uuid';
+
+import https from 'node:https';
+import dgram from 'node:dgram';
+import { readFileSync } from 'node:fs';
 
 const httpsServerOptions = {
-  key: fs.readFileSync('../../certification/privkey.pem'),
-  cert: fs.readFileSync('../../certification/cert.pem')
+  key: readFileSync('../../certification/privkey.pem'),
+  cert: readFileSync('../../certification/cert.pem')
 };
 
 const expressApp = express();
@@ -25,13 +26,34 @@ interface IClientInfo {
 }
 const clients: Record<string, IClientInfo> = {};
 
+socket.on('message', (msg: Buffer, rinfo: dgram.RemoteInfo) => {
+  const message = JSON.parse(msg.toString());
+
+  if (typeof message.experimentCode !== 'string') {
+    console.log('Invalid message received');
+    return;
+  }
+
+  if (typeof message.index !== 'number') {
+    console.log('Invalid message received');
+    return;
+  }
+
+  if (clients[message.experimentCode] === undefined) {
+    console.log('Invalid experiment code received');
+    return;
+  }
+
+  clients[message.experimentCode].receivedTimestamp[message.index] = Date.now();
+});
+
 expressApp.get('/', (req, res) => {
   res.writeHead(200, { 'Content-Type': 'text/plain' });
   res.end('Hello World!');
 });
 
 expressApp.get('/generateExperiment', (req, res) => {
-  const uuid = v5().stringify();
+  const uuid = uuidv4();
 
   clients[uuid] = {
     startTimestamp: Date.now() + 10000,
@@ -80,7 +102,7 @@ expressApp.get('/getExperimentResult', (req, res) => {
 });
 
 socket.bind(9070, () => {
-  console.log("UDP Server listening on port 8070");
+  console.log("UDP Server listening on port 9070");
 
   httpsServer.listen(443, () => {
     console.log("HTTPS Server listening on port 443");
