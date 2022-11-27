@@ -28,6 +28,14 @@ fetch('https://dev.espacefiguratif.net/generateExperiment')
 
         let i = 0;
 
+        const end = () => {
+          socket.close();
+          fetch('https://dev.espacefiguratif.net/getExperimentResult?experimentCode=' + experimentCode)
+            .then(r => {
+              console.log("Result asked");
+            });
+        }
+
         const start = () => {
           send(0);
           i++;
@@ -38,6 +46,7 @@ fetch('https://dev.espacefiguratif.net/generateExperiment')
 
             if (i >= q) {
               clearInterval(intervalId);
+              end();
             }
           }, interval);
         }
