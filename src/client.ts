@@ -1,14 +1,20 @@
-import dgram from 'node:dgram';
+const dgram = require('dgram');
 const socket = dgram.createSocket('udp4');
+
+process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0'
 
 fetch('https://dev.espacefiguratif.net/generateExperiment')
   .then(r => {
     r.json()
       .then(data => {
-        const experimentCode = data.experimentCode;
-        const q = data.count;
-        const startTimestamp = data.startTimestamp;
-        const interval = data.interval;
+        // @ts-ignore
+        const experimentCode = data.experimentCode as string;
+        // @ts-ignore
+        const q = data.count as number;
+        // @ts-ignore
+        const startTimestamp = data.startTimestamp as number;
+        // @ts-ignore
+        const interval = data.interval as number;
 
         const send = (index: number) => {
           socket.send(

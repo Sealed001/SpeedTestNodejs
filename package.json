@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node-dev --respawn src/server.ts"
+    "dev": "ts-node-dev --respawn src/server.ts",
+    "startClient": "ts-node-dev --respawn src/client.ts"
   },
   "author": "",
   "license": "ISC",
